@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>{{.Title}}</title>
+</head>
+<body>
+    <h1>{{.WelcomeMessage}}</h1>
+    <div style="display: flex; flex-direction: column; gap: 2px;">
+        <input type="text" placeholder="Write something...">
+        <button id="send-button">Send</button>
+    </div>
+</body>
+<script>
+    const ws = new WebSocket("ws://localhost:8080/ws")
+    ws.addEventListener('message', (data) => {
+        console.log("Received from the websocket server: %s");
+        console.dir(data);
+    })
+    ws.addEventListener('open', (ev) => {
+        console.log("Connection started, event data: ");
+        console.log(ev)
+    })
+
+    ws.addEventListener('error', (ev) => {
+        console.log("Something went wrong... Error object: ", ev)
+    })
+
+    ws.addEventListener('close', (ev) => {
+        console.log("Connection with the websocket server has been closed. Event data: ", ev);
+    })
+
+    const sendMessage = (messageContent) => {
+        console.log('sending message with the content: %s', messageContent)
+        ws.send(messageContent);
+    }
+
+    document.querySelector("#send-button")
+        .addEventListener('click', (e) => {
+            const msg = document.querySelector("input").value;
+            sendMessage(msg);
+        })
+
+</script>
+</html>
